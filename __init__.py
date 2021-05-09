@@ -7,9 +7,9 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'shopify'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['MAX_CONTENT_LENGTH'] = 20 * 1024 * 1024 # limit file size < 20MB # TODO
+app.config['MAX_CONTENT_LENGTH'] = 20 * 1024 * 1024 # sum of file size < 20MB
 app.config['UPLOAD_EXTENSIONS'] = ['jpg', 'png', 'gif'] # only images allowed
-app.config['UPLOAD_PATH'] = 'uploads'
+app.config['UPLOAD_PATH'] = 'uploads' # folder name to store photos
 
 # init SQLAlchemy so we can use it later in our models
 db = SQLAlchemy()

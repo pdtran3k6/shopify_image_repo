@@ -37,11 +37,12 @@ def upload():
             # and then we generate our own filename to prevent weird filenames
             fname = f'shop_user_{str(current_user.id)}_{secure_filename(fname)}'
             # only images extension allowed
-            if ext not in app.config['UPLOAD_EXTENSIONS'] or \
-                    ext != validate_image(uploaded_file.stream):
+            if ext not in app.config['UPLOAD_EXTENSIONS']:
+                flash('Error: Please choose a valid photo before uploading!')
+                return redirect(url_for('main.profile'))
+
+            if ext != validate_image(uploaded_file.stream):
                 flash('Error: The photo doesn\'t match its extension. Try renaming the file.')
-                print(ext)
-                print(validate_image(uploaded_file.stream))
                 return redirect(url_for('main.profile'))
 
             # should be created the first time we access profile page
