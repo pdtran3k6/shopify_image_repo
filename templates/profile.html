@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="column is-3">
+<div class="column is-3 is-offset-4">
   <form method="POST" enctype="multipart/form-data" action="/upload">
     {% with messages = get_flashed_messages() %}
     {% if messages %}
@@ -16,9 +16,11 @@
     {% endif %}
     {% endif %}
     {% endwith %}
-    <input type='file' name='file' accept='image/*' class="button is-block is-info is-fullwidth" multiple />
-    <br />
-    <button type='submit' class="button is-block is-info">Upload Photos</button>
+    <input type='file' name='file' accept='image/*' class="button is-block is-warning is-fullwidth" multiple />
+    <br>
+    <div class="columns is-centered">
+      <button type='submit' class="column is-half">Upload Photos</button>
+    </div>
   </form>
 </div>
 <br />

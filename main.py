@@ -22,7 +22,10 @@ def profile():
     user_dir = os.path.join(app.config['UPLOAD_PATH'], str(current_user.id))
     Path(user_dir).mkdir(parents=True, exist_ok=True)
     files = os.listdir(user_dir)
-    return render_template('profile.html', files=files)
+    modify_time_sort = lambda f: os.stat(f"{user_dir}/{f}").st_ctime
+    sorted_files = sorted(files, key=modify_time_sort)
+    # display all photos owned by this user
+    return render_template('profile.html', files=sorted_files)
 
 
 @main.route('/upload', methods=['POST'])
