@@ -11,7 +11,7 @@ Feature:
 
 Requirements
 ------------
-Python >= 3.5 and Flask 1.1.1 (`pip install flask`)
+Python >= 3.5, Flask 1.1.1 (`pip install flask`), Pillow 6.2.0 (`pip install Pillow`)
 
 Start
 -----
