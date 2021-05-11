@@ -34,30 +34,40 @@ def upload():
     uploaded = False  # flag for showing success/error notification
     for uploaded_file in request.files.getlist('file'):
         fname = uploaded_file.filename
-        if fname != '':
-            ext = conv_jpeg_to_jpg(uploaded_file.mimetype.split('/')[1])
-            # prevent going up directories attacks (../../config)
-            # and then we generate our own filename to prevent weird filenames
-            fname = f'shop_user_{str(current_user.id)}_{secure_filename(fname)}'
-            # only images extension allowed
-            if ext not in app.config['UPLOAD_EXTENSIONS']:
-                flash('Error: Please choose a valid photo before uploading!')
-                return redirect(url_for('main.profile'))
+        if not fname:
+            flash('Error: Invalid photo name. Please rename the file before uploading.')
+            return redirect(url_for('main.profile'))
+        
+        ext = conv_jpeg_to_jpg(uploaded_file.mimetype.split('/')[1])
+        # prevent going up directories attacks (../../config)
+        # and then we generate our own filename to prevent weird filenames
+        fname = f'shop_user_{str(current_user.id)}_{secure_filename(fname)}'
+        # only images extension allowed
+        if ext not in app.config['UPLOAD_EXTENSIONS']:
+            flash('Error: Please choose a valid photo before uploading!')
+            return redirect(url_for('main.profile'))
 
-            if ext != validate_image(uploaded_file.stream):
-                flash('Error: The photo doesn\'t match its extension. Try renaming the file.')
-                return redirect(url_for('main.profile'))
+        # should be created the first time we access profile page
+        # but just to make sure we have the directory
+        user_dir = os.path.join(
+            app.config['UPLOAD_PATH'], str(current_user.id))
+        Path(user_dir).mkdir(parents=True, exist_ok=True)
+        full_filepath = os.path.join(user_dir, fname)
+        uploaded_file.save(full_filepath)
+        img_type = validate_image(full_filepath)
+        
+        if not img_type:
+            flash('Error: Please choose a valid photo before uploading!')
+            os.remove(full_filepath)
+            return redirect(url_for('main.profile'))
 
-            # should be created the first time we access profile page
-            # but just to make sure we have the directory
-            user_dir = os.path.join(
-                app.config['UPLOAD_PATH'], str(current_user.id))
-            Path(user_dir).mkdir(parents=True, exist_ok=True)
-            uploaded_file.save(os.path.join(user_dir, fname))
-            uploaded = True
-            continue
-        flash('Error: Please choose a valid photo before uploading!')
-        return redirect(url_for('main.profile'))
+        if ext != img_type:
+            print(f'file extension: {ext}, image type: {img_type}')
+            os.remove(full_filepath)
+            flash('Error: The photo doesn\'t match its extension. Try changing the file extension.')
+            return redirect(url_for('main.profile'))
+
+        uploaded = True
 
     flash('Success: Photo(s) uploaded!' if uploaded
           else 'Error: No photo uploaded. Please try again!')
